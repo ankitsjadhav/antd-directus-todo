@@ -51,3 +51,18 @@ export const updateTodo = async ({ id, is_completed }) => {
   const data = await response.json();
   return data.data;
 };
+
+export const deleteTodo = async (id) => {
+  const response = await fetch(`${DIRECTUS_URL}items/todo/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${DIRECTUS_TOKEN}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete todo");
+  }
+
+  return true;
+};

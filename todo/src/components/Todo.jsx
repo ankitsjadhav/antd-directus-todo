@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { List, Input, Button, Checkbox } from "antd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchTodos, addTodo, updateTodo } from "../api/directus";
+import { fetchTodos, addTodo, updateTodo, deleteTodo } from "../api/directus";
 
 function TodoApp() {
   const [newTodoText, setNewTodoText] = useState("");
@@ -27,6 +27,13 @@ function TodoApp() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: deleteTodo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+    },
+  });
+
   return (
     <div>
       <h2>My Todos</h2>
@@ -44,7 +51,13 @@ function TodoApp() {
       <List
         dataSource={todos || []}
         renderItem={(todo) => (
-          <List.Item>
+          <List.Item
+            actions={[
+              <Button danger onClick={() => deleteMutation.mutate(todo.id)}>
+                Delete
+              </Button>,
+            ]}
+          >
             <Checkbox
               checked={todo.is_completed}
               onChange={() => {
